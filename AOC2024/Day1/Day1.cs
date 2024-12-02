@@ -8,50 +8,40 @@ public class Day1
     // sort each array
     // iterate array collecting the distance between numbers
     // sum the numbers
-    private string[] Input { get; init; }
-    private List<int> list1 = new(); 
-    private List<int> list2 = new();
-    private List<int> distances = new();
+    
+    private readonly List<int> _left; 
+    private readonly List<int> _right;
+    
     public Day1(string filePath)
     {
-        this.Input = File.ReadAllLines(filePath);
+        string[] input = File.ReadAllLines(filePath);
+        _left = input.Select(line => int.Parse(line.Split()[0])).ToList();
+        _right = input.Select(line => int.Parse(line.Split()[1])).ToList();
+        
+        _left.Sort();
+        _right.Sort();
     }
 
-    public void PopulateLists()
+    public void Part1()
     { 
-        foreach (var line in Input)
-        {
-            var l = line.Split(' ');
-            list1.Add(int.Parse(l[0]));
-            list2.Add(int.Parse(l[1]));
-        }
-        list1.Sort();
-        list2.Sort();
-
-        for (int i = 0; i < list1.Count; i++)
-        {
-            distances.Add(list1[i] - list2[i]);
-        }
-        
-        var sum = distances.Sum(n => n < 0 ? n * -1 : n);
-        Console.WriteLine(sum);
-        Similarity();
+        var distances = _left
+            .Select((value, index) => Math.Abs(value - _right[index]))
+            .ToList()
+            .Sum();
+        Console.WriteLine($"Distances: {distances}");
     }
     
     // Similarity list 
-    public void Similarity()
+    public void Part2()
     {
-        // int[] left = [3,4,2,1,3,3];
-        // int[] right = [4,3,5,3,9,3];
-
-        var similarity = list1
+        var similarity = _left
             .ToLookup(num => num, num =>
             {
-                return list2.Count(x => x == num) * num;
+                return _right.Count(x => x == num) * num;
             })
             .SelectMany(group => group)
             .ToList()
             .Sum();
-        Console.WriteLine(similarity);
+        Console.WriteLine($"Similarity : {similarity}");
     }
 }
