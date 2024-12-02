@@ -2,6 +2,8 @@ namespace AOC2024.Day1;
 
 public class Day1
 {
+    //Part 1 expected result 1506483
+    // Part 2 Expected result 23126924
     // Read file to 2 int arrays
     // sort each array
     // iterate array collecting the distance between numbers
@@ -33,18 +35,23 @@ public class Day1
         
         var sum = distances.Sum(n => n < 0 ? n * -1 : n);
         Console.WriteLine(sum);
+        Similarity();
     }
     
     // Similarity list 
     public void Similarity()
     {
-        for (var i = 0; i < list1.Count; i++)
-        {
-        var q = from number in list2
-            where number == list1[i]
-            group number by number into g
-                select g.Count();
-            
-        }
+        // int[] left = [3,4,2,1,3,3];
+        // int[] right = [4,3,5,3,9,3];
+
+        var similarity = list1
+            .ToLookup(num => num, num =>
+            {
+                return list2.Count(x => x == num) * num;
+            })
+            .SelectMany(group => group)
+            .ToList()
+            .Sum();
+        Console.WriteLine(similarity);
     }
 }
