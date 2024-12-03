@@ -1,55 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace AOC2024.Day3
 {
     public class Day3
     {
         private const string PATTERN = @"mul\((\d{1,3}),(\d{1,3})\)";
+        private readonly string _input;
 
-        public void Part1(string filePath)
+        public Day3(string filePath)
         {
-            List<int> instructions = new();
-            try
+            using (StreamReader reader = new StreamReader(filePath))
             {
-                using StreamReader reader = new StreamReader(filePath);
-                
-                string input = reader.ReadToEnd();
-
-                foreach (Match match in Regex.Matches(input,PATTERN))
-                {
-                    Console.WriteLine($"Found {match.Value} at {match.Index}: Groups: {match.Groups[1]}, {match.Groups[2]}");
-                    instructions.Add(int.Parse(match.Groups[1].Value) * int.Parse(match.Groups[2].Value));
-                }
-
-                Console.WriteLine($"Sum: {instructions.Sum()}");
-
-
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine("The file could not be read:");
-                Console.WriteLine(e.Message);
+                _input = reader.ReadToEnd();
             }
 
         }
 
+        public void Part1()
+        {
+            //Expected answer 162813399
+            
+            List<int> values = new();
+
+            foreach (Match match in Regex.Matches(_input, PATTERN))
+            {
+                values.Add(int.Parse(match.Groups[1].Value) * int.Parse(match.Groups[2].Value));
+            }
+            Console.WriteLine($"Part1: {values.Sum()}");
+        }
+        
         public void Part2()
         {
-            string sample = @"xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
-            string splitPattern = @"don't\(\).*do\(\)";
+            // Expected answer Part2: 53783319
+            
+            List<int> values = new();
+            const string dodonot = @"mul\((\d{1,3}),(\d{1,3})\)|don't\(\)|do\(\)";
+            bool isSkip = false;
 
-            string[] parts = Regex.Split(sample, splitPattern);
-
-            foreach (var item in parts)
+            foreach (Match match in Regex.Matches(_input, dodonot))
             {
-                Console.WriteLine(item);
+                if (match.Value is "don't()" or "do()")
+                {
+                    isSkip = match.Value == "don't()";
+                    continue;
+                }
+
+                if (!isSkip)
+                {
+                    values.Add(int.Parse(match.Groups[1].Value) * int.Parse(match.Groups[2].Value));
+                }
             }
+
+            Console.WriteLine($"Part2: {values.Sum()}");
         }
     }
 }
