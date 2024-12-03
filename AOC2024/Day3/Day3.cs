@@ -41,7 +41,15 @@ namespace AOC2024.Day3
 
         public void Part2()
         {
+            string sample = @"xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
+            string splitPattern = @"don't\(\).*do\(\)";
 
+            string[] parts = Regex.Split(sample, splitPattern);
+
+            foreach (var item in parts)
+            {
+                Console.WriteLine(item);
+            }
         }
     }
 }

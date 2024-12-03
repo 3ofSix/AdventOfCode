@@ -18,4 +18,5 @@ using AOC2024.Day3;
 //string p = @"../../../Day3/sample.txt";
 string p = @"../../../Day3/puzzle.txt";
 Day3 day3 = new Day3();
-day3.Part1(p);
+//day3.Part1(p);
+day3.Part2();
