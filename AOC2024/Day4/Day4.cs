@@ -1,26 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
-using System.Text.RegularExpressions;
-
-namespace AOC2024.Day4
+﻿namespace AOC2024.Day4
 {
     public class Day4
     {
-        private readonly char[][] grid;
+        private readonly char[][] _grid;
         public Day4(string filePath)
         {
             string[] Input = File.ReadAllLines(filePath);
             // Create the char[][] array (grid)
-            grid = Input.Select(line => line.ToCharArray()).ToArray();
+            _grid = Input.Select(line => line.ToCharArray()).ToArray();
         }
 
         public void Part1(string word)
         {
-            List<int[]> ans = searchWord(grid, word);
+            List<int[]> ans = searchWord(_grid, word);
 
             printResult(ans);
 
@@ -28,7 +20,7 @@ namespace AOC2024.Day4
 
         public void Part2()
         {
-           
+            Console.WriteLine($"Day4 part2 found {Search("MAS")} X's");
         }
         // This function searches for the given word
         // in all 8 directions from the coordinate.
@@ -91,15 +83,15 @@ namespace AOC2024.Day4
         static List<int[]> searchWord(char[][] grid, string word)
         {
             int foundWords = 0;
-            int m = grid.Length;
-            int n = grid[0].Length;
+            int rows = grid.Length;
+            int cols = grid[0].Length;
             List<int[]> ans = new List<int[]>();
 
             // if the word is found from this coordinate,
             // then append it to result.
-            for (int i = 0; i < m; i++)
+            for (int i = 0; i < rows; i++)
             {
-                for (int j = 0; j < n; j++)
+                for (int j = 0; j < cols; j++)
                 {
                     //if (search2D(grid, i, j, word))
                     //{
@@ -120,6 +112,62 @@ namespace AOC2024.Day4
             }
             Console.WriteLine();
             Console.WriteLine($"Total: {ans.Count}");
+        }
+
+        int Search(string word)
+        {
+            int foundX = 0;
+            
+            // Iterate grid searching for word
+            for (int row = 0; row < _grid.Length; row++)
+            {
+                for (int col = 0; col < _grid[0].Length; col++)
+                {
+                    if (searchX(row, col, word))
+                    {
+                        foundX++;
+                        Console.WriteLine($"\tFound {word} {foundX} times at row {row}, col {col}");
+                    }
+                }
+            }
+            return foundX;
+        }
+
+        private bool searchX(int row, int col, string word)
+        {
+            // x and y are used to set the direction in which
+            // word needs to be searched.
+            // remember rows ar increasing as they go down
+            int[] x = { -1, 1, 1, -1 }; // col
+            int[] y = {  1,-1, 1, -1 }; // row
+            
+            // check for A
+            if (_grid[row][col] != word[1])
+                return false;
+            // Search for M, S in each direction of X from A
+            
+            // If grid[row][col] letter is A ASSUME word is MAS
+            
+                // set up down left, up right, dowm right, up left
+                int xdl = col + x[0], ydl = row + y[0];
+                int xur = col + x[1], yur = row + y[1];
+                int xdr = col + x[2], ydr = row + y[2];
+                int xul = col + x[3], yul = row + y[3];
+                
+            // break if out of bounds
+            // check x
+            if (xdl < 0 || xul < 0 || xur >= _grid[0].Length || xdr >= _grid[0].Length)
+                return false;
+            // check y
+            if (ydl < 0 || yul < 0 || yur >= _grid.Length || ydr >= _grid.Length)
+                return false;
+
+            // for each direction check for M or S
+            return (
+                       ((_grid[ydl][xdl] == word[0] && _grid[yur][xur] == word[2]) || (_grid[ydl][xdl] == word[2] && _grid[yur][xur] == word[0]))
+                   && 
+                       ((_grid[ydr][xdr] == word[0] && _grid[yul][xul] == word[2]) || (_grid[ydr][xdr] == word[2] && _grid[yul][xul] == word[0]))
+                       );
         }
     }
 }

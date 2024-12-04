@@ -31,6 +31,7 @@ void Solve()
         case 4:
             Day4 day4 = new Day4(file);
             day4.Part1("XMAS");
+            day4.Part2();
             break;
 
         default:
