@@ -4,6 +4,7 @@ using AOC2024.Day1;
 using AOC2024.Day2;
 using AOC2024.Day3;
 using Version = AOC2024.Version;
+using AOC2024.Day4;
 
 int day = 2;
 var v = Version.Sample;
