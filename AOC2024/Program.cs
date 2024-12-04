@@ -3,6 +3,7 @@
 using AOC2024.Day1;
 using AOC2024.Day2;
 using AOC2024.Day3;
+using AOC2024.Day4;
 
 
 //string p = @"C:\Users\admin\RiderProjects\AdventOfCode\AOC2024\Day1\sample.txt";
@@ -16,7 +17,11 @@ using AOC2024.Day3;
 // Day2 day2 = new Day2(p);
 
 //string p = @"../../../Day3/sample.txt";
-string p = @"../../../Day3/puzzle.txt";
-Day3 day3 = new Day3();
-//day3.Part1(p);
-day3.Part2();
+//string p = @"../../../Day3/puzzle.txt";
+//Day3 day3 = new Day3();
+////day3.Part1(p);
+//day3.Part2();
+
+string p = @"../../../Day4/puzzle.txt";
+Day4 day4 = new Day4(p);
+day4.Part1("XMAS");
