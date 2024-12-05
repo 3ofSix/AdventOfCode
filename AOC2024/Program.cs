@@ -5,6 +5,7 @@ using AOC2024.Day2;
 using AOC2024.Day3;
 using Version = AOC2024.Version;
 using AOC2024.Day4;
+using AOC2024.Day5;
 
 uint day;
 Version version = new Version();
@@ -32,6 +33,11 @@ void Solve()
             Day4 day4 = new Day4(file);
             day4.Part1("XMAS");
             day4.Part2();
+            break;
+        case 5:
+            Day5 day5 = new Day5(file);
+            day5.Part1();
+            day5.Part2();
             break;
 
         default:
@@ -70,7 +76,7 @@ while (!isExit)
     }
     catch (Exception e)
     {
-        Console.WriteLine(e);
+        //Console.WriteLine(e);
     }
 
 }
