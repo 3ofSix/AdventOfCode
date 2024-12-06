@@ -20,9 +20,16 @@ namespace AOC2024.Day6
             // Find start direction
             Guard guard =  FindGuard();
             Console.WriteLine($"Guard starts at ({guard.X},{guard.Y}): moving {guard.Direction} ");
+            // set Guard position to an X
+            MarkTheSpot(guard);
            // Move Guard and track path
            MoveGuard(guard);
+           CountTheXs();
+        }
 
+        private void MarkTheSpot(Guard guard)
+        {
+            _room[guard.X][guard.Y] = 'X';
         }
 
         public void Part2()
@@ -56,25 +63,17 @@ namespace AOC2024.Day6
 
         private void MoveGuard(Guard guard)
         {
-            List<string> points = new();
-            // Add Guard start position
-            points.Add(string.Concat(guard.X, guard.Y)); 
             // While the guard is in the room move
             // ^ : row -1, > : col +1, v : row +1, < : col -1
             
-            // CHeck boundaries
             bool guardInRoom = true;
-            // while (guard.X < _room[0].Length && guard is { X: > 0, Y: > 0 } && guard.Y < _room.Length)
             while (guardInRoom)
             {
                 // Check ahead, if cannot (#) move turn right, check ahead again
                 // move in a direction, record position, then check ahead
                 // repeat
 
-                // record position here
-                
                 // Console.WriteLine($"Guard at ({guard.X},{guard.Y}): moving {guard.Direction} ");
-                points.Add(string.Concat(guard.X, guard.Y));
                 try
                 {
                     switch (guard.Direction)
@@ -127,11 +126,20 @@ namespace AOC2024.Day6
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"\n\tGuard has left the building!");
-                    Console.WriteLine($"\tGuard was in {points.Distinct().Count()} positions.");
                     Console.ResetColor();
                     guardInRoom = false;
                 }
+                //Mark the spot
+                MarkTheSpot(guard);
             }
+        }
+
+        private void CountTheXs()
+        {
+            int countX = _room.SelectMany(line => line).Count(c => c == 'X');
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine($"\n\tNumber of Xs: {countX}");
+            Console.ResetColor();
         }
     }
 
