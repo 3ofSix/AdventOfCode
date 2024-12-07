@@ -36,7 +36,7 @@ void Solve()
             break;
         case 6:
             Day6 day6 = new Day6(file);
-            // day6.Part1();
+            day6.Part1();
             day6.Part2();
             break;
 
