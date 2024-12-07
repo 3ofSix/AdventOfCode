@@ -76,7 +76,7 @@ while (!isExit)
     }
     catch (Exception e)
     {
-        //Console.WriteLine(e);
+        Console.WriteLine(e);
     }
 
 }
