@@ -32,10 +32,6 @@ namespace AOC2024.Day6
 
         private void MarkTheSpot(char marker = 'X')
         {
-            if (_room[_guard.X][_guard.Y] == '+')
-            {
-                _blockers++;
-            }
             _room[_guard.X][_guard.Y] = marker;
         }
 
@@ -43,18 +39,28 @@ namespace AOC2024.Day6
         {
             SetRoom();
             MarkTheSpot('|'); // Guard is on the way up
-
-            // Loop the room adding an obstacle
-            foreach (var row in _room)
+            for (int row = 0; row < _room.Length; row++)
             {
-                for (var y = 0; y < row.Length; y++)
+                for (int col = 0; col < _room[row].Length; col++)
                 {
                     SetRoom(); // Reset Room
-                    if (row[y] == '#') continue;
-                    row[y] = Obstacle; // Set the obstacle
+                    if (_room[row][col] == '#') continue;
+                    _room[row][col] = Obstacle; // Set the obstacle
                     MoveGuard(false);
+                    //DrawRoom();
                 }
             }
+            // Loop the room adding an obstacle
+            // foreach (var row in _room)
+            // {
+            //     for (var y = 0; y < row.Length; y++)
+            //     {
+            //         SetRoom(); // Reset Room
+            //         if (row[y] == '#') continue;
+            //         row[y] = Obstacle; // Set the obstacle
+            //         MoveGuard(false);
+            //     }
+            // }
 
             Console.WriteLine($"Part 2: Blockers: {_blockers}");
         }
@@ -112,13 +118,20 @@ namespace AOC2024.Day6
                 // Check ahead, if cannot (# || O) move turn right, check ahead again
                 // move in a direction, record position, then check ahead
                 // repeat
-                
+
+                var debugCheck = _room[_guard.X][_guard.Y];
+                if (_room[6][3] == Obstacle)
+                {
+                    bool stop;
+                }
+
                 try
                 {
                     switch (_guard.Direction)
                     {
                         case '^':
-                            if (_room[_guard.X - 1][_guard.Y] != '#' && _room[_guard.X - 1][_guard.Y] != Obstacle && _room[_guard.X - 1][_guard.Y] != '+')
+                            if (_room[_guard.X - 1][_guard.Y] == '+') throw new InfiniteLoopException();
+                            if (_room[_guard.X - 1][_guard.Y] != '#' && _room[_guard.X - 1][_guard.Y] != Obstacle)
                             {
                                 _guard.X -= 1;
                                 MarkTheSpot(useX ? 'X' : '|');
@@ -126,12 +139,13 @@ namespace AOC2024.Day6
                             else
                             {
                                 _guard.Direction = '>';
-                                if(!useX) MarkTheSpot('+');
+                                if (!useX) MarkTheSpot('+');
                             }
 
                             break;
                         case 'v':
-                            if (_room[_guard.X + 1][_guard.Y] != '#' && _room[_guard.X + 1][_guard.Y] != Obstacle && _room[_guard.X + 1][_guard.Y] != '+')
+                            if (_room[_guard.X + 1][_guard.Y] == '+') throw new InfiniteLoopException();
+                            if (_room[_guard.X + 1][_guard.Y] != '#' && _room[_guard.X + 1][_guard.Y] != Obstacle)
                             {
                                 _guard.X += 1;
                                 MarkTheSpot(useX ? 'X' : '|');
@@ -139,12 +153,13 @@ namespace AOC2024.Day6
                             else
                             {
                                 _guard.Direction = '<';
-                                if(!useX) MarkTheSpot('+');
+                                if (!useX) MarkTheSpot('+');
                             }
 
                             break;
                         case '<':
-                            if (_room[_guard.X][_guard.Y - 1] != '#' && _room[_guard.X][_guard.Y - 1] != Obstacle && _room[_guard.X][_guard.Y - 1] != '+')
+                            if (_room[_guard.X][_guard.Y - 1] == '+') throw new InfiniteLoopException();
+                            if (_room[_guard.X][_guard.Y - 1] != '#' && _room[_guard.X][_guard.Y - 1] != Obstacle)
                             {
                                 _guard.Y -= 1;
                                 MarkTheSpot(useX ? 'X' : '-');
@@ -152,12 +167,13 @@ namespace AOC2024.Day6
                             else
                             {
                                 _guard.Direction = '^';
-                                if(!useX) MarkTheSpot('+');
+                                if (!useX) MarkTheSpot('+');
                             }
 
                             break;
                         case '>':
-                            if (_room[_guard.X][_guard.Y + 1] != '#' && _room[_guard.X][_guard.Y + 1] != Obstacle && _room[_guard.X][_guard.Y + 1] != '+')
+                            if (_room[_guard.X][_guard.Y + 1] == '+') throw new InfiniteLoopException();
+                            if (_room[_guard.X][_guard.Y + 1] != '#' && _room[_guard.X][_guard.Y + 1] != Obstacle)
                             {
                                 _guard.Y += 1;
                                 MarkTheSpot(useX ? 'X' : '-');
@@ -165,7 +181,7 @@ namespace AOC2024.Day6
                             else
                             {
                                 _guard.Direction = 'v';
-                                if(!useX) MarkTheSpot('+');
+                                if (!useX) MarkTheSpot('+');
                             }
 
                             break;
@@ -180,6 +196,13 @@ namespace AOC2024.Day6
                     // Console.ResetColor();
                     break;
                 }
+                catch (InfiniteLoopException)
+                {
+                    Console.WriteLine("Infinite loop detected");
+                    _blockers++;
+                    DrawRoom();
+                    break;
+                }
             }
         }
 
@@ -189,6 +212,23 @@ namespace AOC2024.Day6
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine($"\n\tNumber of Xs: {countX}");
             Console.ResetColor();
+        }
+    }
+
+    internal class InfiniteLoopException : Exception
+    {
+        public InfiniteLoopException()
+        {
+        }
+
+        public InfiniteLoopException(string message)
+            : base(message)
+        {
+        }
+
+        public InfiniteLoopException(string message, Exception inner)
+            : base(message, inner)
+        {
         }
     }
 
