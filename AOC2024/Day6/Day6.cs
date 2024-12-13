@@ -4,7 +4,7 @@ namespace AOC2024.Day6
 {
     public class Day6
     {
-        private char[][] _room;
+        private char[,] _room;
         private readonly char[] _guardDirection = ['^', '>', 'v', '<'];
         private readonly string[] _input;
         private Guard _guard;
@@ -18,61 +18,82 @@ namespace AOC2024.Day6
 
         private void SetRoom()
         {
-            _room = _input.Select(line => line.ToCharArray()).ToArray(); // Create the char[][] array (room)
+            // new char[rows, cols]
+            _room = new char[_input.Length, _input.First().Length];
+            
+            _input.SelectMany((line, rowIndex) =>
+                line.Select((character, colIndex) =>
+                    new { rowIndex, colIndex, character }))
+                .ToList()
+                .ForEach(entry =>
+                    _room[entry.rowIndex,entry.colIndex] = entry.character);
+           
             _guard = FindGuard(); // Find Guard start coords
         }
 
         public void Part1()
         {
             SetRoom();
-            MarkTheSpot(); // set Guard position to an X
-            MoveGuard(true); // Move Guard and track path
+            MarkTheSpot(true); // set Guard position to an X
+            while (_guard.Move(_room)) // While the guard can move
+            { 
+                MarkTheSpot(true); // set Guard position to an X
+            }
             CountTheXs(); // Expected 4454
+           // DrawRoom();
         }
 
-        private void MarkTheSpot(char marker = 'X')
+        private void MarkTheSpot(bool useX, char marker = 'X')
         {
-            if (_room[_guard.X][_guard.Y] == '+')
+            if (!useX)
+            {
+                if (_guard.Direction == Direction.Up || _guard.Direction == Direction.Down)
+                {
+                    marker = '|';
+                } else if (_guard.Direction == Direction.Left || _guard.Direction == Direction.Right)
+                {
+                    marker = '-';
+                }
+            }
+            if (_room[_guard.X,_guard.Y] == '+')
             {
                 _blockers++;
             }
-            _room[_guard.X][_guard.Y] = marker;
+            _room[_guard.X,_guard.Y] = marker;
         }
 
         public void Part2()
         {
-            SetRoom();
-            MarkTheSpot('|'); // Guard is on the way up
-
-            // Loop the room adding an obstacle
-            foreach (var row in _room)
-            {
-                for (var y = 0; y < row.Length; y++)
-                {
-                    SetRoom(); // Reset Room
-                    if (row[y] == '#') continue;
-                    row[y] = Obstacle; // Set the obstacle
-                    MoveGuard(false);
-                }
-            }
+             SetRoom();
+             MarkTheSpot(false); // Guard is on the way up
+            //
+            // // Loop the room adding an obstacle
+            // foreach (var row in _room)
+            // {
+            //     for (var y = 0; y < row.Length; y++)
+            //     {
+            //         SetRoom(); // Reset Room
+            //         if (row[y] == '#') continue;
+            //         row[y] = Obstacle; // Set the obstacle
+            //         MoveGuard(false);
+            //     }
+            // }
 
             Console.WriteLine($"Part 2: Blockers: {_blockers}");
         }
 
         void DrawRoom()
         {
-            foreach (var row in _room)
+            for (int row = 0; row < _room.GetLength(0); row++)
             {
-                foreach (var col in row)
+                for (int col = 0; col < _room.GetLength(1); col++)
                 {
-                    if (col != '.' && col != '#') Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.Write($"{col} ");
+                    if(_room[row,col] != '.' && _room[row,col] != '#') Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.Write($"{_room[row,col]} ");
                     Console.ResetColor();
                 }
-
                 Console.WriteLine();
             }
-
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("-----------------------");
             Console.ResetColor();
@@ -80,21 +101,16 @@ namespace AOC2024.Day6
 
         private Guard? FindGuard()
         {
-            for (var x = 0; x < _room.Length; x++)
+            for (var row = 0; row < _room.GetLength(0); row++)
             {
-                for (var y = 0; y < _room[x].Length; y++)
+                for (var col = 0; col < _room.GetLength(1); col++)
                 {
                     // Loop the guard!
                     foreach (var direction in _guardDirection)
                     {
-                        if (direction == _room[x][y])
+                        if (direction == _room[row,col])
                         {
-                            return new Guard
-                            {
-                                X = x,
-                                Y = y,
-                                Direction = direction
-                            };
+                            return new Guard(direction, row, col);
                         }
                     }
                 }
@@ -103,99 +119,29 @@ namespace AOC2024.Day6
             return null;
         }
 
-        private void MoveGuard(bool useX)
-        {
-            // While the guard is in the room move
-            // ^ : row -1, > : col +1, v : row +1, < : col -1
-            while (true)
-            {
-                // Check ahead, if cannot (# || O) move turn right, check ahead again
-                // move in a direction, record position, then check ahead
-                // repeat
-                
-                try
-                {
-                    switch (_guard.Direction)
-                    {
-                        case '^':
-                            if (_room[_guard.X - 1][_guard.Y] != '#' && _room[_guard.X - 1][_guard.Y] != Obstacle && _room[_guard.X - 1][_guard.Y] != '+')
-                            {
-                                _guard.X -= 1;
-                                MarkTheSpot(useX ? 'X' : '|');
-                            }
-                            else
-                            {
-                                _guard.Direction = '>';
-                                if(!useX) MarkTheSpot('+');
-                            }
-
-                            break;
-                        case 'v':
-                            if (_room[_guard.X + 1][_guard.Y] != '#' && _room[_guard.X + 1][_guard.Y] != Obstacle && _room[_guard.X + 1][_guard.Y] != '+')
-                            {
-                                _guard.X += 1;
-                                MarkTheSpot(useX ? 'X' : '|');
-                            }
-                            else
-                            {
-                                _guard.Direction = '<';
-                                if(!useX) MarkTheSpot('+');
-                            }
-
-                            break;
-                        case '<':
-                            if (_room[_guard.X][_guard.Y - 1] != '#' && _room[_guard.X][_guard.Y - 1] != Obstacle && _room[_guard.X][_guard.Y - 1] != '+')
-                            {
-                                _guard.Y -= 1;
-                                MarkTheSpot(useX ? 'X' : '-');
-                            }
-                            else
-                            {
-                                _guard.Direction = '^';
-                                if(!useX) MarkTheSpot('+');
-                            }
-
-                            break;
-                        case '>':
-                            if (_room[_guard.X][_guard.Y + 1] != '#' && _room[_guard.X][_guard.Y + 1] != Obstacle && _room[_guard.X][_guard.Y + 1] != '+')
-                            {
-                                _guard.Y += 1;
-                                MarkTheSpot(useX ? 'X' : '-');
-                            }
-                            else
-                            {
-                                _guard.Direction = 'v';
-                                if(!useX) MarkTheSpot('+');
-                            }
-
-                            break;
-                        default:
-                            throw new Exception("Invalid direction");
-                    }
-                }
-                catch (IndexOutOfRangeException e)
-                {
-                    // Console.ForegroundColor = ConsoleColor.Green;
-                    // Console.WriteLine($"\n\tGuard has left the building!");
-                    // Console.ResetColor();
-                    break;
-                }
-            }
-        }
+        
 
         private void CountTheXs()
         {
-            int countX = _room.SelectMany(line => line).Count(c => c == 'X');
-            Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine($"\n\tNumber of Xs: {countX}");
-            Console.ResetColor();
+             int xCount = _room.Cast<char>().Count(c => c == 'X');
+             Console.ForegroundColor = ConsoleColor.Magenta;
+             Console.WriteLine($"\n\tNumber of Xs: {xCount}");
+             Console.ResetColor();
         }
     }
 
-    public class Guard
+    internal class InfiniteLoopException : Exception
     {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public char Direction { get; set; }
+        public InfiniteLoopException()
+        {
+        }
+
+        public InfiniteLoopException(string? message) : base(message)
+        {
+        }
+
+        public InfiniteLoopException(string? message, Exception? innerException) : base(message, innerException)
+        {
+        }
     }
 }
