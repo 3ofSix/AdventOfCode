@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using AOC2024.Day1;
+using AOC2024.Day10;
 using AOC2024.Day2;
 using AOC2024.Day3;
 using Version = AOC2024.Version;
@@ -36,8 +37,13 @@ void Solve()
             break;
         case 6:
             Day6 day6 = new Day6(file);
-          //  day6.Part1();
+            day6.Part1();
             day6.Part2();
+            break;
+        case 10:
+            Day10 day10 = new Day10(file);
+            day10.Part1();
+            day10.Part2();
             break;
 
         default:
