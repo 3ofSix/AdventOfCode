@@ -43,8 +43,8 @@ public class Guard
                 break;
         }
     }
-
-    public bool Move(char[,] room)
+    
+    public MoveResult Move(char[,] room)
     {
         var (dx, dy) = _directionVectors[_direction];
         int newX = X + dx;
@@ -53,17 +53,18 @@ public class Guard
         // Deja Vu! Have I faced here before?
         if (_visitedState.Contains((newX, newY, _direction)))
         {
-            Console.WriteLine("INFINITE {0} is already visited.", _direction);
-            return false;
+            // Console.WriteLine("INFINITE {0} is already visited.", _direction);
+            return MoveResult.InifiteLoop;
         }
         // Check boundaries. Has the guard left the room?
         if (newX < 0 || newY < 0 || newX >= room.GetLength(0) || newY >= room.GetLength(1))
         {
-            Console.WriteLine("Guard left the room");
-            return false;
+            // Console.WriteLine("Guard left the room");
+            return MoveResult.LeftRoom;
         }
-
-        if (room[newX,newY] != '#')
+        
+        _visitedState.Add((newX, newY, _direction));
+        if (room[newX,newY] != '#' && room[newX, newY] != 'O')
         {
            X = newX;
            Y = newY;
@@ -72,7 +73,7 @@ public class Guard
         {
             Turn();
         }
-        return true;
+        return MoveResult.Moved;
     }
 }
 
@@ -82,4 +83,11 @@ public enum Direction
     Right = '>',
     Down = 'v',
     Left = '<'
+}
+
+public enum MoveResult
+{
+    Moved,
+    LeftRoom,
+    InifiteLoop
 }

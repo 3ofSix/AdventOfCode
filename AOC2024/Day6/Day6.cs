@@ -22,8 +22,8 @@ namespace AOC2024.Day6
             _room = new char[_input.Length, _input.First().Length];
             
             _input.SelectMany((line, rowIndex) =>
-                line.Select((character, colIndex) =>
-                    new { rowIndex, colIndex, character }))
+                    line.Select((character, colIndex) =>
+                        new { rowIndex, colIndex, character }))
                 .ToList()
                 .ForEach(entry =>
                     _room[entry.rowIndex,entry.colIndex] = entry.character);
@@ -35,12 +35,49 @@ namespace AOC2024.Day6
         {
             SetRoom();
             MarkTheSpot(true); // set Guard position to an X
-            while (_guard.Move(_room)) // While the guard can move
-            { 
-                MarkTheSpot(true); // set Guard position to an X
-            }
+            MoveGuard(true);
             CountTheXs(); // Expected 4454
-           // DrawRoom();
+            // DrawRoom();
+        }
+        public void Part2()
+        {
+            // // Loop the room adding an obstacle
+            SetRoom();
+            for (int row = 0; row < _room.GetLength(0); row++)
+            {
+                for (int col = 0; col < _room.GetLength(1); col++)
+                {
+                    SetRoom(); // Reset room for each new obstacle position
+                    MarkTheSpot(false); // Guard is on the way up
+                    if (_room[row,col] == '#') continue; // If this already an obstacles skip
+                    _room[row,col] = Obstacle; // Set the obstacle
+                    MoveGuard(false);
+                }
+            }
+
+            Console.WriteLine($"Part 2: Blockers: {_blockers}"); // Expected 1503
+        }
+
+        private void MoveGuard(bool xAsMarker)
+        {
+            bool isMoving = true;
+            while (isMoving) // While the guard can move
+            {
+                var moveResult = _guard.Move(_room);
+                switch (moveResult)
+                {
+                    case MoveResult.Moved: 
+                        MarkTheSpot(xAsMarker); // set Guard position to an X
+                        break;
+                    case MoveResult.LeftRoom:
+                        isMoving = false;
+                        break;
+                    case MoveResult.InifiteLoop:
+                        _blockers++;
+                        isMoving = false;
+                        break;
+                }
+            }
         }
 
         private void MarkTheSpot(bool useX, char marker = 'X')
@@ -62,25 +99,6 @@ namespace AOC2024.Day6
             _room[_guard.X,_guard.Y] = marker;
         }
 
-        public void Part2()
-        {
-             SetRoom();
-             MarkTheSpot(false); // Guard is on the way up
-            //
-            // // Loop the room adding an obstacle
-            // foreach (var row in _room)
-            // {
-            //     for (var y = 0; y < row.Length; y++)
-            //     {
-            //         SetRoom(); // Reset Room
-            //         if (row[y] == '#') continue;
-            //         row[y] = Obstacle; // Set the obstacle
-            //         MoveGuard(false);
-            //     }
-            // }
-
-            Console.WriteLine($"Part 2: Blockers: {_blockers}");
-        }
 
         void DrawRoom()
         {
@@ -118,30 +136,13 @@ namespace AOC2024.Day6
 
             return null;
         }
-
         
-
         private void CountTheXs()
         {
-             int xCount = _room.Cast<char>().Count(c => c == 'X');
-             Console.ForegroundColor = ConsoleColor.Magenta;
-             Console.WriteLine($"\n\tNumber of Xs: {xCount}");
-             Console.ResetColor();
-        }
-    }
-
-    internal class InfiniteLoopException : Exception
-    {
-        public InfiniteLoopException()
-        {
-        }
-
-        public InfiniteLoopException(string? message) : base(message)
-        {
-        }
-
-        public InfiniteLoopException(string? message, Exception? innerException) : base(message, innerException)
-        {
+            int xCount = _room.Cast<char>().Count(c => c == 'X');
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine($"\n\tNumber of Xs: {xCount}");
+            Console.ResetColor();
         }
     }
 }
