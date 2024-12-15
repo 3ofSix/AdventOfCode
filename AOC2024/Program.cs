@@ -2,6 +2,7 @@
 
 using AOC2024.Day1;
 using AOC2024.Day10;
+using AOC2024.Day15;
 using AOC2024.Day2;
 using AOC2024.Day3;
 using Version = AOC2024.Version;
@@ -44,6 +45,11 @@ void Solve()
             Day10 day10 = new Day10(file);
             day10.Part1();
             day10.Part2();
+            break;
+        case 15:
+            Day15 day15 = new Day15(file);
+            day15.Part1();
+            day15.Part2();
             break;
 
         default:
