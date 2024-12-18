@@ -5,9 +5,9 @@ using AOC2024.Day2;
 using AOC2024.Day3;
 using Version = AOC2024.Version;
 using AOC2024.Day4;
+using AOC2024.Day5;
 using AOC2024.Day6;
 using AOC2024.Day7;
-using AOC2024.Day5;
 
 uint day;
 Version version = new Version();
