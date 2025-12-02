@@ -1,45 +1,25 @@
-﻿using AOC2025;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using AOC2025;
 
-var factory = new PuzzleSolverFactory();
+var services = new ServiceCollection();
+// Add logging just because
+services.AddLogging(logger =>  logger.AddConsole());
+// Register factory
+services.AddSingleton<IPuzzleSolverFactory, PuzzleSolverFactory>();
 
-while (true)
+// Register all solvers 
+
+var solverTypes = AppDomain.CurrentDomain.GetAssemblies()
+    .SelectMany(a => a.GetTypes())
+    .Where(t => typeof(IPuzzleSolver).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+
+foreach (var type in solverTypes)
 {
-    Console.WriteLine("\n\t-- Advent of Code 2025 --");
-    Console.WriteLine("\nWhat day do you want to solve?");
-    Console.WriteLine("\nType a number for the day?\n\t(0 for exit)");
-
-    if (!uint.TryParse(Console.ReadLine(), out uint day) || day == 0)
-        break;
-
-
-    Console.WriteLine("----------------");
-    Console.WriteLine("Attempt solve for sample or puzzle input?");
-    Console.WriteLine("\t1 - Sample \n\t2 - Puzzle");
-    Console.WriteLine("\t0 - Exit");
-
-    if (!uint.TryParse(Console.ReadLine(), out uint version) || version == 0)
-        break;
-
-    PuzzleType puzzleType = version switch
-    {
-        1 => PuzzleType.Sample,
-        2 => PuzzleType.Puzzle,
-        _ => throw new ArgumentException("Invalid selection")
-    };
-
-    string filePath = puzzleType == PuzzleType.Sample
-        ? $@"../../../Day{day}/sample.txt"
-        : $@"../../../Day{day}/puzzle.txt";
-
-    try
-    {
-        var solver = factory.CreateSolver(day, filePath);
-        solver.Part1();
-        solver.Part2();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex.Message);
-    }
-
+    services.AddTransient(type);
 }
+
+services.AddTransient<PuzzleMenu>();
+var provider = services.BuildServiceProvider();
+var menu = provider.GetRequiredService<PuzzleMenu>();
+menu.Show();

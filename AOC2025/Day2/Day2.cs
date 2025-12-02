@@ -2,12 +2,13 @@
 
 namespace AOC2025
 {
-    public class Day2Solver : IPuzzleSolver
+    [PuzzleDay(2)]
+    public class Day2 : IPuzzleSolver
     {   // Match a pattern
         // Add up the matched pattern
 
         private readonly List<(long First, long Last)> ranges;
-        public Day2Solver(string filePath)
+        public Day2(string filePath)
         {
             string line = File.ReadAllText(filePath);
             // split line on commas
@@ -17,6 +18,7 @@ namespace AOC2025
                 .Select(ids => (First: Int64.Parse(ids[0]), Last: Int64.Parse(ids[1])))
                 .ToList();
         }
+
 
         public void Part1()
         {

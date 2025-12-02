@@ -1,6 +1,9 @@
-﻿namespace AOC2025;
+﻿using Microsoft.Extensions.Logging;
 
-public class Day1Solver : IPuzzleSolver
+namespace AOC2025;
+
+[PuzzleDay(1)]
+public class Day1 : IPuzzleSolver
 {
     // Safe cracking 
     // Safe 0 - 99, read a line Left (minus the number), right (add the number)
@@ -9,13 +12,16 @@ public class Day1Solver : IPuzzleSolver
     // Part 1 answer 1084
     // Part 2 answer 6475
 
+    private readonly ILogger<Day1> _logger;
     private readonly List<string> lines;
     private int dialPosition;
     private int password;
     private const int dialSize = 100;
 
-    public Day1Solver(string filePath)
+    public Day1(ILogger<Day1> logger, string filePath)
     {
+        _logger = logger;
+        _logger.LogInformation($"Loading file {filePath}");
         lines = new List<string>(File.ReadAllLines(filePath));
     }
 
