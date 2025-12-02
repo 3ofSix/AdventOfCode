@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using AOC2025.Day1;
+using AOC2025.Day2;
 using Version = AOC2025.Version;
 
 uint day;
@@ -16,11 +17,13 @@ void Solve()
             Day1 day1 = new Day1(file);
             day1.Part1();
             day1.Part2();
-            day1.Part2Optimized();
+            //day1.Part2Optimized();
             break;
-        //case 2:
-        //    Day2 day2 = new Day2(file);
-        //    break;
+        case 2:
+            Day2 day2 = new Day2(file);
+            day2.Part1();
+            day2.Part2();
+            break;
         //case 3:
         //    Day3 day3 = new Day3(file);
         //    day3.Part1();
