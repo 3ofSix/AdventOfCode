@@ -1,21 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 
 namespace AOC2025
 {
     public class PuzzleSolverFactory : IPuzzleSolverFactory
     {
+        private readonly Dictionary<uint, Type> _solverTypes;
+
+        public PuzzleSolverFactory()
+        {
+            _solverTypes = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(type => typeof(IPuzzleSolver).IsAssignableFrom(type) &&
+                type.Name.StartsWith("Day"))
+                .ToDictionary(
+                type => uint.Parse(type.Name.Substring(3, type.Name.IndexOf("Solver") - 3)),
+                type => type);
+        }
+
         public IPuzzleSolver CreateSolver(uint day, string filePath)
         {
-            return day switch
+            if (_solverTypes.TryGetValue(day, out var solver))
             {
-                1 => new Day1(filePath),
-                2 => new Day2(filePath),
-                _ => throw new ArgumentException($"No solver for day {day}")
-            };
+                return (IPuzzleSolver)Activator.CreateInstance(solver, filePath)!;
+            }
+            throw new ArgumentException($"No solver for day {day}");
         }
     }
 }

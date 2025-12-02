@@ -1,6 +1,6 @@
 ﻿namespace AOC2025;
 
-public class Day1 : IPuzzleSolver
+public class Day1Solver : IPuzzleSolver
 {
     // Safe cracking 
     // Safe 0 - 99, read a line Left (minus the number), right (add the number)
@@ -14,7 +14,7 @@ public class Day1 : IPuzzleSolver
     private int password;
     private const int dialSize = 100;
 
-    public Day1(string filePath)
+    public Day1Solver(string filePath)
     {
         lines = new List<string>(File.ReadAllLines(filePath));
     }
@@ -56,52 +56,5 @@ public class Day1 : IPuzzleSolver
             }
         }
         Console.WriteLine($"Part 2 password is {password}");
-    }
-
-    public void Part2Optimized()
-    {
-        // This is wrong and yields an incorrect result.
-        int dialSize = 100;
-        int currentPosition = 50;
-        int zeroCount = 0;
-
-        foreach (var line in lines)
-        {
-            char direction = line[0];
-            int steps = int.Parse(line.Substring(1));
-            int start = currentPosition;
-
-            int fullRotations = steps / dialSize;
-            int remainder = steps % dialSize;
-
-            // Update dial position
-            if (direction == 'R')
-                currentPosition = (start + steps) % dialSize;
-            else
-            {
-                currentPosition = (start - steps) % dialSize;
-                if (currentPosition < 0) currentPosition += dialSize;
-            }
-
-            int hits = fullRotations;
-
-            // Partial crossing
-            if (direction == 'R' && (start + remainder) >= dialSize)
-                hits++;
-            if (direction == 'L' && (start - remainder) < 0)
-                hits++;
-
-            // Final zero check (only if remainder == 0 and start != 0)
-            if (currentPosition == 0 && remainder == 0 && start != 0)
-                hits++;
-
-            // Exclude starting zero if counted
-            if (start == 0 && hits > 0 && remainder != 0)
-                hits--;
-
-            zeroCount += hits;
-        }
-
-        Console.WriteLine($"Password is {zeroCount}");
     }
 }

@@ -2,12 +2,12 @@
 
 namespace AOC2025
 {
-    public class Day2 : IPuzzleSolver
+    public class Day2Solver : IPuzzleSolver
     {   // Match a pattern
         // Add up the matched pattern
 
         private readonly List<(long First, long Last)> ranges;
-        public Day2(string filePath)
+        public Day2Solver(string filePath)
         {
             string line = File.ReadAllText(filePath);
             // split line on commas
