@@ -1,87 +1,45 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using AOC2025.Day1;
-using AOC2025.Day2;
-using Version = AOC2025.Version;
+using AOC2025;
 
-uint day;
-Version version = new Version();
-bool isExit = false;
+var factory = new PuzzleSolverFactory();
 
-void Solve()
-{
-    string file = version == Version.Sample ? $@"../../../Day{day}/sample.txt" : $@"../../../Day{day}/puzzle.txt";
-    switch (day)
-    {
-        case 1:
-            Day1 day1 = new Day1(file);
-            day1.Part1();
-            day1.Part2();
-            //day1.Part2Optimized();
-            break;
-        case 2:
-            Day2 day2 = new Day2(file);
-            day2.Part1();
-            day2.Part2();
-            break;
-        //case 3:
-        //    Day3 day3 = new Day3(file);
-        //    day3.Part1();
-        //    day3.Part2();
-        //    break;
-        //case 4:
-        //    Day4 day4 = new Day4(file);
-        //    day4.Part1("XMAS");
-        //    day4.Part2();
-        //    break;
-        //case 6:
-        //    Day6 day6 = new Day6(file);
-        //    day6.Part1();
-        //    day6.Part2();
-        //    break;
-        //case 10:
-        //    Day10 day10 = new Day10(file);
-        //    day10.Part1();
-        //    day10.Part2();
-        //    break;
-
-        default:
-            throw new Exception($"Day {day} is not supported");
-    }
-}
-
-while (!isExit)
+while (true)
 {
     Console.WriteLine("\n\tAdvent of Code 2025");
-    Console.WriteLine("\nWhat day do you want to solve?\nType a number for the day?\n\t0 for exit");
-    day = Convert.ToUInt32(Console.ReadLine());
-    if (day == 0) break;
+    Console.WriteLine("\nWhat day do you want to solve?");
+    Console.WriteLine("\nType a number for the day?\n\t(0 for exit)");
+
+    if (!uint.TryParse(Console.ReadLine(), out uint day) || day == 0)
+        break;
+
+    
     Console.WriteLine("----------------");
     Console.WriteLine("Attempt solve for sample or puzzle input?");
     Console.WriteLine("\t1 - Sample \n\t2 - Puzzle");
-
     Console.WriteLine("\t0 - Exit");
 
-    switch (Convert.ToUInt32(Console.ReadLine()))
+    if (!uint.TryParse(Console.ReadLine(), out uint version) || version == 0)
+        break;
+
+    PuzzleType puzzleType = version switch
     {
-        case 1:
-            version = Version.Sample;
-            break;
-        case 2:
-            version = Version.Puzzle;
-            break;
-        default:
-            isExit = true;
-            break;
-    }
-    if (isExit) break;
+        1 => PuzzleType.Sample,
+
+        2 => PuzzleType.Puzzle,
+        _ => throw new ArgumentException("Invalid selection")
+    };
+    
+    string file = puzzleType == PuzzleType.Sample ? $@"../../../Day{day}/sample.txt" : $@"../../../Day{day}/puzzle.txt";
     try
     {
-        Solve();
+        var solver = factory.CreateSolver(day, file);
+        solver.Part1();
+        solver.Part2();
     }
-    catch (Exception e)
+    catch(Exception ex)
     {
-        Console.WriteLine(e);
+        Console.WriteLine(ex.Message);
     }
-
+    
 }

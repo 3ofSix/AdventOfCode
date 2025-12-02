@@ -1,6 +1,6 @@
-﻿namespace AOC2025.Day1;
+﻿namespace AOC2025;
 
-public class Day1
+public class Day1 : IPuzzleSolver
 {
     // Safe cracking 
     // Safe 0 - 99, read a line Left (minus the number), right (add the number)

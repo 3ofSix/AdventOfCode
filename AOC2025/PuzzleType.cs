@@ -1,6 +1,6 @@
 namespace AOC2025;
 
-public enum Version
+public enum PuzzleType
 {
     Sample,
     Puzzle
